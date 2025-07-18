@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+// 追加: Google Fontsの読み込み（Noto Sans JP, M PLUS Rounded 1c）
+import Head from "next/head";
 
 // サンプル事例データ
 const sampleCases = [
@@ -98,7 +100,58 @@ function MainComponent() {
     { id: "intro", label: "はじめに" },
     { id: "success", label: "成功事例" },
     { id: "failure", label: "失敗事例" },
+    { id: "diagnosis", label: "スモビジ診断" },
   ];
+
+  // スモビジ診断用state
+  const [diagnosis, setDiagnosis] = useState({
+    experience: "",
+    capital: "",
+    industry: "",
+    risk: "",
+    free: "",
+  });
+  const [diagnosisResult, setDiagnosisResult] = useState(null);
+
+  // 診断ロジック（簡易）
+  function calcDiagnosis() {
+    let score = 50;
+    if (diagnosis.experience === "あり") score += 15;
+    if (diagnosis.capital === "300万円以上") score += 15;
+    if (diagnosis.risk === "高い") score += 10;
+    if (diagnosis.free.length > 30) score += 10;
+    if (diagnosis.industry === "IT・Web" || diagnosis.industry === "教育・コンサル") score += 5;
+    if (score > 100) score = 100;
+    // おすすめ業種とクイックスタート
+    let recommend = "";
+    let quick = "";
+    switch (diagnosis.industry) {
+      case "IT・Web":
+        recommend = "Web制作・ノーコード開発・SNS運用代行";
+        quick = "まずは自分のポートフォリオサイトやSNSアカウントを作り、知人や副業サイトで小さな案件から受注してみましょう。";
+        break;
+      case "飲食":
+        recommend = "キッチンカー・間借りカフェ・デリバリー専門店";
+        quick = "小規模な間借りやイベント出店からスタートし、SNSで集客・口コミを広げましょう。";
+        break;
+      case "教育・コンサル":
+        recommend = "オンライン講座・家庭教師・キャリア相談";
+        quick = "noteやYouTubeで情報発信し、まずは無料相談や小規模な講座から始めてみましょう。";
+        break;
+      case "小売・EC":
+        recommend = "ネットショップ・ハンドメイド販売・輸入転売";
+        quick = "BASEやメルカリなど無料で始められるECサービスで、まずは1商品から出品してみましょう。";
+        break;
+      case "サービス":
+        recommend = "家事代行・パーソナルジム・写真撮影・ペット関連";
+        quick = "地域の掲示板やSNSでサービスを告知し、知人や近隣から小さく始めてみましょう。";
+        break;
+      default:
+        recommend = "あなたの強みや経験を活かせる分野";
+        quick = "まずは身近な人に相談・ヒアリングし、小さなテスト販売やサービス提供から始めてみましょう。";
+    }
+    setDiagnosisResult({ score, recommend, quick });
+  }
 
   // Translations
   const translations = {
@@ -922,6 +975,70 @@ function MainComponent() {
             </div>
           </section>
         );
+      case "diagnosis":
+        return (
+          <section id="diagnosis" className="bg-[#232526]/90 rounded-3xl shadow-2xl p-5 sm:p-8 text-base sm:text-lg text-gray-100 mb-8 animate-fadeIn max-w-2xl mx-auto border border-[#f7c873]/30" style={{backdropFilter:'blur(2px)'}}>
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-[#f7c873]" style={{fontFamily:'\"M PLUS Rounded 1c\",sans-serif'}}>スモビジ診断</h2>
+            <form onSubmit={e => {e.preventDefault(); calcDiagnosis();}} className="space-y-6">
+              <div>
+                <label className="block mb-1 font-semibold text-[#f7c873]">起業・副業経験</label>
+                <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.experience} onChange={e => setDiagnosis(d => ({...d, experience: e.target.value}))}>
+                  <option value="">選択してください</option>
+                  <option value="あり">あり</option>
+                  <option value="なし">なし</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold text-[#f7c873]">自己資金</label>
+                <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.capital} onChange={e => setDiagnosis(d => ({...d, capital: e.target.value}))}>
+                  <option value="">選択してください</option>
+                  <option value="50万円未満">50万円未満</option>
+                  <option value="50〜300万円">50〜300万円</option>
+                  <option value="300万円以上">300万円以上</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold text-[#f7c873]">やりたい業種</label>
+                <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.industry} onChange={e => setDiagnosis(d => ({...d, industry: e.target.value}))}>
+                  <option value="">選択してください</option>
+                  <option value="飲食">飲食</option>
+                  <option value="IT・Web">IT・Web</option>
+                  <option value="教育・コンサル">教育・コンサル</option>
+                  <option value="小売・EC">小売・EC</option>
+                  <option value="サービス">サービス</option>
+                  <option value="その他">その他</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold text-[#f7c873]">リスク許容度</label>
+                <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.risk} onChange={e => setDiagnosis(d => ({...d, risk: e.target.value}))}>
+                  <option value="">選択してください</option>
+                  <option value="高い">高い（挑戦したい）</option>
+                  <option value="普通">普通</option>
+                  <option value="低い">低い（安定重視）</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold text-[#f7c873]">自由記述（意気込み・アイデア・質問など）</label>
+                <textarea className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white min-h-[80px]" value={diagnosis.free} onChange={e => setDiagnosis(d => ({...d, free: e.target.value}))} placeholder="あなたの想いやアイデアを自由に記入してください"></textarea>
+              </div>
+              <div className="pt-2">
+                <button type="submit" className="rounded-full bg-gradient-to-r from-[#f7c873] to-[#f7a873] text-gray-900 font-bold py-2 px-8 transition-all duration-200 shadow-md hover:scale-105 hover:shadow-lg border-2 border-[#f7c873]/40">診断する</button>
+              </div>
+            </form>
+            {diagnosisResult !== null && (
+              <div className="mt-8 p-6 bg-[#232526]/80 rounded-2xl shadow-inner border border-[#f7c873]/30 text-center animate-fadeIn">
+                <div className="text-2xl font-bold text-[#f7c873] mb-2">あなたのスモールビジネス成功確率</div>
+                <div className="text-4xl font-extrabold mb-4" style={{fontFamily:'\"M PLUS Rounded 1c\",sans-serif'}}>{diagnosisResult.score}%</div>
+                <div className="text-gray-100 mb-4">{diagnosisResult.score >= 80 ? "かなり高い成功確率！ぜひ一歩踏み出しましょう。" : diagnosisResult.score >= 60 ? "十分にチャンスあり。準備を進めてみましょう。" : diagnosisResult.score >= 40 ? "工夫次第で成功も可能。まずは情報収集と小さな挑戦から！" : "慎重に計画を立てて、リスクを抑えたスタートをおすすめします。"}</div>
+                <div className="text-lg font-bold text-[#f7c873] mt-6 mb-2">おすすめのスモビジ</div>
+                <div className="text-gray-100 mb-4">{diagnosisResult.recommend}</div>
+                <div className="text-lg font-bold text-[#f7c873] mt-6 mb-2">クイックスタートアドバイス</div>
+                <div className="text-gray-100">{diagnosisResult.quick}</div>
+              </div>
+            )}
+          </section>
+        );
       default:
         return <div>Select a tab</div>;
     }
@@ -971,13 +1088,17 @@ function MainComponent() {
   // ページ表示時アニメーション用state
   const [showMotivation, setShowMotivation] = useState(true);
   const [motivationStep, setMotivationStep] = useState(0);
+  const [fade, setFade] = useState(true); // true: in, false: out
 
   useEffect(() => {
     if (showMotivation && motivationStep < motivationImages.length) {
-      const timer = setTimeout(() => {
+      setFade(true);
+      const timer1 = setTimeout(() => setFade(false), 1200); // 画像表示後フェードアウト
+      const timer2 = setTimeout(() => {
         setMotivationStep((prev) => prev + 1);
-      }, 900);
-      return () => clearTimeout(timer);
+        setFade(true);
+      }, 1800); // 画像切り替え
+      return () => { clearTimeout(timer1); clearTimeout(timer2); };
     } else if (showMotivation && motivationStep >= motivationImages.length) {
       setTimeout(() => {
         setShowMotivation(false);
@@ -987,38 +1108,44 @@ function MainComponent() {
 
   // カードレイアウト&モーダルUI
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 text-white font-roboto">
+    <div className="min-h-screen bg-gradient-to-br from-[#232526] via-[#414345] to-[#232526] text-white font-sans relative" style={{fontFamily: '"Noto Sans JP", "M PLUS Rounded 1c", sans-serif'}}>
+      <Head>
+        <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+      </Head>
+      {/* ノイズ背景レイヤー */}
+      <div className="pointer-events-none fixed inset-0 z-0" style={{background: 'repeating-linear-gradient(135deg,rgba(255,255,255,0.01) 0 2px,transparent 2px 8px),radial-gradient(ellipse at 40% 60%,rgba(255,255,255,0.04),transparent 70%)', opacity: 0.7}} />
       {/* ページ表示時アニメーション */}
       {showMotivation && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-100">
-          <div className="w-72 h-72 flex items-center justify-center relative">
-            <img
-              src={motivationImages[Math.min(motivationStep, motivationImages.length - 1)].src}
-              alt={motivationImages[Math.min(motivationStep, motivationImages.length - 1)].label}
-              className="rounded-2xl shadow-2xl object-cover w-full h-full animate-fadeIn"
-              style={{ transition: 'all 0.7s cubic-bezier(0.4,0,0.2,1)' }}
-            />
-            <div className="absolute bottom-4 left-0 right-0 text-center text-white text-2xl font-bold drop-shadow-lg animate-fadeIn">
-              {motivationImages[Math.min(motivationStep, motivationImages.length - 1)].label}
-            </div>
+          <div className="w-[90vw] max-w-2xl h-[40vw] max-h-[60vh] flex items-center justify-center relative overflow-hidden">
+            {motivationImages.map((img, idx) => (
+              <img
+                key={img.src}
+                src={img.src}
+                alt=""
+                className={`rounded-3xl shadow-2xl shadow-black/60 object-cover w-full h-full absolute left-0 top-0 transition-opacity duration-[900ms] ease-in-out ${motivationStep === idx && fade ? 'opacity-100' : 'opacity-0'}`}
+                style={{zIndex: motivationStep === idx ? 2 : 1}}
+              />
+            ))}
           </div>
-          <div className="mt-8 text-3xl sm:text-4xl font-bold text-white tracking-wide animate-fadeIn">
+          <div className="mt-8 text-3xl sm:text-4xl font-bold text-white tracking-wide animate-fadeIn" style={{textShadow:'0 2px 8px #000, 0 0 1px #fff'}}>
             スモールビジネスは、<br className="sm:hidden" />あなたにもできる。
           </div>
         </div>
       )}
       {/* 通常表示（アニメーション終了後） */}
       {!showMotivation && (
-        <div className="container mx-auto px-2 sm:px-4 py-8 sm:py-12 max-w-5xl">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-8 sm:mb-10 text-center tracking-tight leading-tight text-cyan-200 drop-shadow">スモールビジネス事例集</h1>
+        <div className="container mx-auto px-2 sm:px-4 py-8 sm:py-12 max-w-5xl relative z-10">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-8 sm:mb-10 text-center tracking-tight leading-tight text-[#f7c873] drop-shadow-lg" style={{fontFamily:'"M PLUS Rounded 1c",sans-serif',letterSpacing:'0.04em'}}>スモールビジネス事例集</h1>
           {/* タブナビゲーション */}
           <nav className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-4" aria-label="事例カテゴリ">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 sm:px-6 py-2 rounded-full font-bold transition-colors duration-200 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 ${activeTab === tab.id ? "bg-cyan-500 text-white shadow" : "bg-gray-800 text-cyan-300 hover:bg-cyan-700 hover:text-white"}`}
+                className={`px-4 sm:px-6 py-2 rounded-full font-bold transition-colors duration-200 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-[#f7c873] border-2 ${activeTab === tab.id ? "bg-gradient-to-r from-[#f7c873] to-[#f7a873] text-gray-900 shadow-lg border-[#f7c873]" : "bg-[#232526]/80 text-[#f7c873] border-[#f7c873]/30 hover:bg-[#f7c873]/10 hover:text-white"}`}
                 aria-current={activeTab === tab.id ? "page" : undefined}
+                style={{boxShadow: activeTab === tab.id ? '0 4px 24px 0 #f7c87355' : undefined}}
               >
                 {tab.label}
               </button>
@@ -1026,8 +1153,8 @@ function MainComponent() {
           </nav>
           {/* タブ内容 */}
           {activeTab === "intro" && (
-            <section className="bg-gray-800 rounded-2xl shadow-xl p-5 sm:p-8 text-base sm:text-lg text-gray-100 mb-8 animate-fadeIn text-left max-w-2xl mx-auto">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-cyan-300">はじめに</h2>
+            <section className="bg-[#232526]/90 rounded-3xl shadow-2xl p-5 sm:p-8 text-base sm:text-lg text-gray-100 mb-8 animate-fadeIn text-left max-w-2xl mx-auto border border-[#f7c873]/30" style={{backdropFilter:'blur(2px)'}}>
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-[#f7c873]" style={{fontFamily:'"M PLUS Rounded 1c",sans-serif'}}>はじめに</h2>
               <p>
                 このサイトでは、スモールビジネスで毎月100万円以上のキャッシュを生み出す仕組みを作った
                 <span className="block sm:inline">「成功事例」と、リアルな「失敗事例」を多数紹介しています。</span>
@@ -1041,7 +1168,7 @@ function MainComponent() {
                 <span className="block sm:inline">――そんな気持ちを後押しするために、</span>
                 <span className="block sm:inline">リアルなストーリーと具体的な工夫・失敗・学びをまとめました。</span>
               </p>
-              <p className="mt-4 text-cyan-200 font-semibold">
+              <p className="mt-4 text-[#f7c873] font-semibold">
                 きっと、あなたにもできる。<br />
                 まずは気になる事例から、あなたの未来のヒントを見つけてください。
               </p>
@@ -1050,12 +1177,13 @@ function MainComponent() {
           {activeTab === "success" && (
             <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fadeIn">
               {successCases.map((c) => (
-                <article key={c.id} className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden flex flex-col hover:scale-[1.025] transition-transform duration-300 min-h-[340px]">
-                  <img src={c.image} alt={c.title} className="w-full h-40 sm:h-48 object-cover" loading="lazy" />
+                <article key={c.id} className="bg-gradient-to-br from-[#232526] via-[#414345] to-[#232526] rounded-3xl shadow-2xl shadow-black/30 overflow-hidden flex flex-col hover:scale-[1.025] transition-transform duration-300 min-h-[340px] border border-[#f7c873]/20 relative" style={{backdropFilter:'blur(1.5px)'}}>
+                  <div className="absolute inset-0 pointer-events-none" style={{background:'repeating-linear-gradient(135deg,rgba(255,255,255,0.01) 0 2px,transparent 2px 8px),radial-gradient(ellipse at 40% 60%,rgba(255,255,255,0.04),transparent 70%)',opacity:0.5}} />
+                  <img src={c.image} alt={c.title} className="w-full h-40 sm:h-48 object-cover rounded-t-3xl" loading="lazy" style={{filter:'brightness(0.98) contrast(1.08)'}} />
                   <div className="p-4 flex-1 flex flex-col">
-                    <h2 className="text-lg sm:text-xl font-semibold mb-2 text-cyan-300 line-clamp-2">{c.title}</h2>
-                    <p className="text-gray-200 mb-4 flex-1 line-clamp-3">{c.description}</p>
-                    <button onClick={() => setModalCase(c)} className="mt-auto bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md w-full">続きを見る</button>
+                    <h2 className="text-lg sm:text-xl font-semibold mb-2 text-[#f7c873] line-clamp-2" style={{fontFamily:'"M PLUS Rounded 1c",sans-serif'}}>{c.title}</h2>
+                    <p className="text-gray-100 mb-4 flex-1 line-clamp-3" style={{textShadow:'0 1px 2px #0002'}}>{c.description}</p>
+                    <button onClick={() => setModalCase(c)} className="mt-auto rounded-full bg-gradient-to-r from-[#f7c873] to-[#f7a873] text-gray-900 font-bold py-2 px-4 transition-all duration-200 shadow-md hover:scale-105 hover:shadow-lg w-full border-2 border-[#f7c873]/40">続きを見る</button>
                   </div>
                 </article>
               ))}
@@ -1064,34 +1192,98 @@ function MainComponent() {
           {activeTab === "failure" && (
             <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fadeIn">
               {failureCases.map((c) => (
-                <article key={c.id} className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden flex flex-col hover:scale-[1.025] transition-transform duration-300 min-h-[340px]">
-                  <img src={c.image} alt={c.title} className="w-full h-40 sm:h-48 object-cover" loading="lazy" />
+                <article key={c.id} className="bg-gradient-to-br from-[#232526] via-[#414345] to-[#232526] rounded-3xl shadow-2xl shadow-black/30 overflow-hidden flex flex-col hover:scale-[1.025] transition-transform duration-300 min-h-[340px] border border-[#f7c873]/20 relative" style={{backdropFilter:'blur(1.5px)'}}>
+                  <div className="absolute inset-0 pointer-events-none" style={{background:'repeating-linear-gradient(135deg,rgba(255,255,255,0.01) 0 2px,transparent 2px 8px),radial-gradient(ellipse at 40% 60%,rgba(255,255,255,0.04),transparent 70%)',opacity:0.5}} />
+                  <img src={c.image} alt={c.title} className="w-full h-40 sm:h-48 object-cover rounded-t-3xl" loading="lazy" style={{filter:'brightness(0.98) contrast(1.08)'}} />
                   <div className="p-4 flex-1 flex flex-col">
-                    <h2 className="text-lg sm:text-xl font-semibold mb-2 text-cyan-300 line-clamp-2">{c.title}</h2>
-                    <p className="text-gray-200 mb-4 flex-1 line-clamp-3">{c.description}</p>
-                    <button onClick={() => setModalCase(c)} className="mt-auto bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md w-full">続きを見る</button>
+                    <h2 className="text-lg sm:text-xl font-semibold mb-2 text-[#f7c873] line-clamp-2" style={{fontFamily:'"M PLUS Rounded 1c",sans-serif'}}>{c.title}</h2>
+                    <p className="text-gray-100 mb-4 flex-1 line-clamp-3" style={{textShadow:'0 1px 2px #0002'}}>{c.description}</p>
+                    <button onClick={() => setModalCase(c)} className="mt-auto rounded-full bg-gradient-to-r from-[#f7c873] to-[#f7a873] text-gray-900 font-bold py-2 px-4 transition-all duration-200 shadow-md hover:scale-105 hover:shadow-lg w-full border-2 border-[#f7c873]/40">続きを見る</button>
                   </div>
                 </article>
               ))}
+            </section>
+          )}
+          {activeTab === "diagnosis" && (
+            <section className="bg-[#232526]/90 rounded-3xl shadow-2xl p-5 sm:p-8 text-base sm:text-lg text-gray-100 mb-8 animate-fadeIn max-w-2xl mx-auto border border-[#f7c873]/30" style={{backdropFilter:'blur(2px)'}}>
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-[#f7c873]" style={{fontFamily:'\"M PLUS Rounded 1c\",sans-serif'}}>スモビジ診断</h2>
+              <form onSubmit={e => {e.preventDefault(); calcDiagnosis();}} className="space-y-6">
+                <div>
+                  <label className="block mb-1 font-semibold text-[#f7c873]">起業・副業経験</label>
+                  <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.experience} onChange={e => setDiagnosis(d => ({...d, experience: e.target.value}))}>
+                    <option value="">選択してください</option>
+                    <option value="あり">あり</option>
+                    <option value="なし">なし</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block mb-1 font-semibold text-[#f7c873]">自己資金</label>
+                  <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.capital} onChange={e => setDiagnosis(d => ({...d, capital: e.target.value}))}>
+                    <option value="">選択してください</option>
+                    <option value="50万円未満">50万円未満</option>
+                    <option value="50〜300万円">50〜300万円</option>
+                    <option value="300万円以上">300万円以上</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block mb-1 font-semibold text-[#f7c873]">やりたい業種</label>
+                  <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.industry} onChange={e => setDiagnosis(d => ({...d, industry: e.target.value}))}>
+                    <option value="">選択してください</option>
+                    <option value="飲食">飲食</option>
+                    <option value="IT・Web">IT・Web</option>
+                    <option value="教育・コンサル">教育・コンサル</option>
+                    <option value="小売・EC">小売・EC</option>
+                    <option value="サービス">サービス</option>
+                    <option value="その他">その他</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block mb-1 font-semibold text-[#f7c873]">リスク許容度</label>
+                  <select className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white" value={diagnosis.risk} onChange={e => setDiagnosis(d => ({...d, risk: e.target.value}))}>
+                    <option value="">選択してください</option>
+                    <option value="高い">高い（挑戦したい）</option>
+                    <option value="普通">普通</option>
+                    <option value="低い">低い（安定重視）</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block mb-1 font-semibold text-[#f7c873]">自由記述（意気込み・アイデア・質問など）</label>
+                  <textarea className="w-full rounded-lg p-2 bg-[#232526]/80 border border-[#f7c873]/30 text-white min-h-[80px]" value={diagnosis.free} onChange={e => setDiagnosis(d => ({...d, free: e.target.value}))} placeholder="あなたの想いやアイデアを自由に記入してください"></textarea>
+                </div>
+                <div className="pt-2">
+                  <button type="submit" className="rounded-full bg-gradient-to-r from-[#f7c873] to-[#f7a873] text-gray-900 font-bold py-2 px-8 transition-all duration-200 shadow-md hover:scale-105 hover:shadow-lg border-2 border-[#f7c873]/40">診断する</button>
+                </div>
+              </form>
+              {diagnosisResult !== null && (
+                <div className="mt-8 p-6 bg-[#232526]/80 rounded-2xl shadow-inner border border-[#f7c873]/30 text-center animate-fadeIn">
+                  <div className="text-2xl font-bold text-[#f7c873] mb-2">あなたのスモールビジネス成功確率</div>
+                  <div className="text-4xl font-extrabold mb-4" style={{fontFamily:'\"M PLUS Rounded 1c\",sans-serif'}}>{diagnosisResult.score}%</div>
+                  <div className="text-gray-100 mb-4">{diagnosisResult.score >= 80 ? "かなり高い成功確率！ぜひ一歩踏み出しましょう。" : diagnosisResult.score >= 60 ? "十分にチャンスあり。準備を進めてみましょう。" : diagnosisResult.score >= 40 ? "工夫次第で成功も可能。まずは情報収集と小さな挑戦から！" : "慎重に計画を立てて、リスクを抑えたスタートをおすすめします。"}</div>
+                  <div className="text-lg font-bold text-[#f7c873] mt-6 mb-2">おすすめのスモビジ</div>
+                  <div className="text-gray-100 mb-4">{diagnosisResult.recommend}</div>
+                  <div className="text-lg font-bold text-[#f7c873] mt-6 mb-2">クイックスタートアドバイス</div>
+                  <div className="text-gray-100">{diagnosisResult.quick}</div>
+                </div>
+              )}
             </section>
           )}
         </div>
       )}
       {/* モーダル */}
       {typeof window !== "undefined" && modalCase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 animate-fadeIn px-2">
-          <div className="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full p-4 sm:p-8 relative animate-fadeInUp mx-auto">
-            <button onClick={() => setModalCase(null)} className="absolute top-3 right-3 text-gray-400 hover:text-cyan-400 text-2xl font-bold">×</button>
-            <img src={modalCase.image} alt={modalCase.title} className="w-full h-40 sm:h-56 object-cover rounded-xl mb-4 sm:mb-6" />
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-cyan-300 text-center">{modalCase.title}</h2>
-            <pre className="text-gray-100 whitespace-pre-wrap mb-2 text-base sm:text-lg text-center">{modalCase.detail}</pre>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 animate-fadeIn px-2">
+          <div className="bg-gradient-to-br from-[#232526] via-[#414345] to-[#232526] rounded-3xl shadow-2xl shadow-black/40 max-w-lg w-full p-4 sm:p-8 relative animate-fadeInUp mx-auto border border-[#f7c873]/30" style={{backdropFilter:'blur(2px)'}}>
+            <button onClick={() => setModalCase(null)} className="absolute top-3 right-3 text-[#f7c873] hover:text-white text-2xl font-bold bg-[#232526]/60 rounded-full w-10 h-10 flex items-center justify-center shadow-md border border-[#f7c873]/40">×</button>
+            <img src={modalCase.image} alt={modalCase.title} className="w-full h-40 sm:h-56 object-cover rounded-xl mb-4 sm:mb-6 shadow-lg" style={{filter:'brightness(0.98) contrast(1.08)'}} />
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-[#f7c873] text-center" style={{fontFamily:'"M PLUS Rounded 1c",sans-serif'}}>{modalCase.title}</h2>
+            <pre className="text-gray-100 whitespace-pre-wrap mb-2 text-base sm:text-lg text-center" style={{textShadow:'0 1px 2px #0002'}}>{modalCase.detail}</pre>
           </div>
         </div>
       )}
       {/* アニメーション用スタイルとテキスト省略用ユーティリティ */}
       <style jsx global>{`
-        .animate-fadeIn { animation: fadeIn 0.4s ease; }
-        .animate-fadeInUp { animation: fadeInUp 0.5s cubic-bezier(0.4,0,0.2,1); }
+        .animate-fadeIn { animation: fadeIn 0.7s cubic-bezier(0.4,0,0.2,1); }
+        .animate-fadeInUp { animation: fadeInUp 0.7s cubic-bezier(0.4,0,0.2,1); }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
