@@ -1,28 +1,10 @@
-This project was generated from [create.xyz](https://create.xyz/).
+# スモールビジネス事例集
 
-It is a [Next.js](https://nextjs.org/) project built on React and TailwindCSS.
+このWebアプリは、スモールビジネスで毎月100万円以上のキャッシュを生み出す仕組みを作った「成功事例」と、リアルな「失敗事例」を多数紹介する事例集です。
 
-## Getting Started
+- 会社員・副業・未経験からでも挑戦できるリアルなストーリーを掲載
+- 成功・失敗の両面から学べる
+- モチベーションの上がるアニメーション演出あり
+- PC・スマホ両対応のモダンなUI/UX
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the code in `src`. The page auto-updates as you edit the file.
-
-To learn more, take a look at the following resources:
-
-- [React Documentation](https://react.dev/) - learn about React
-- [TailwindCSS Documentation](https://tailwindcss.com/) - learn about TailwindCSS
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+「自分にもできるかも」と思えるヒントを、ぜひ見つけてください。
